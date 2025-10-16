@@ -84,6 +84,15 @@ async fn messages_handler(
     headers: HeaderMap,
     Json(payload): Json<AnthropicRequest>,
 ) -> impl IntoResponse {
+    if let Some(path) = state.logging_path.as_ref() {
+        let timestamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis();
+        let anthropic_request_path = format!("{path}/{timestamp}-anthropic-request.json");
+        let anthropic_request_json = serde_json::to_string_pretty(&payload).unwrap();
+        std::fs::write(anthropic_request_path, anthropic_request_json).expect("Failed to write anthropic request log");
+    }
     let settings_guard = state.config.read().await;
     let openai_request = anthropic_to_openai::format_anthropic_to_openai(payload, &settings_guard);
 

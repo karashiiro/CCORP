@@ -18,10 +18,30 @@ pub fn format_anthropic_to_openai(req: AnthropicRequest, settings: &Config) -> O
     let mut openapi_messages = Vec::new();
 
     if let Some(system) = req.system {
-        if let Some(system_str) = system.as_str() {
+        let system_text = if let Some(system_str) = system.as_str() {
+            // Handle string format: "system prompt text"
+            system_str.to_string()
+        } else if let Some(system_array) = system.as_array() {
+            // Handle array format: [{"type": "text", "text": "..."}]
+            system_array
+                .iter()
+                .filter_map(|block| {
+                    if block["type"] == "text" {
+                        block["text"].as_str().map(|s| s.to_string())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<String>>()
+                .join("\n\n")
+        } else {
+            String::new()
+        };
+
+        if !system_text.is_empty() {
             openapi_messages.push(OpenAIMessage {
                 role: "system".to_string(),
-                content: Some(system_str.to_string()),
+                content: Some(system_text),
                 tool_calls: None,
                 tool_call_id: None,
             });
