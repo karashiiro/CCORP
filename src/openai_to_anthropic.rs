@@ -1,4 +1,4 @@
-use crate::models::*;
+use crate::models::{AnthropicResponse, AnthropicUsage, OpenAIResponse};
 use serde_json::json;
 
 pub fn format_openai_to_anthropic(resp: OpenAIResponse) -> AnthropicResponse {
@@ -32,5 +32,11 @@ pub fn format_openai_to_anthropic(resp: OpenAIResponse) -> AnthropicResponse {
         },
         stop_sequence: None,
         model: resp.model,
+        usage: AnthropicUsage {
+            input_tokens: resp.usage.prompt_tokens,
+            output_tokens: resp.usage.completion_tokens,
+            cache_creation_input_tokens: None,
+            cache_read_input_tokens: None,
+        },
     }
 }

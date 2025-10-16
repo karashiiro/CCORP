@@ -3,6 +3,16 @@ use serde::{Deserialize, Serialize};
 // Anthropic API Structs
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct AnthropicUsage {
+    pub input_tokens: u32,
+    pub output_tokens: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cache_creation_input_tokens: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cache_read_input_tokens: Option<u32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AnthropicMessage {
     pub role: String,
     pub content: serde_json::Value,
@@ -32,9 +42,18 @@ pub struct AnthropicResponse {
     pub stop_reason: String,
     pub stop_sequence: Option<String>,
     pub model: String,
+    pub usage: AnthropicUsage,
 }
 
 // OpenAI API Structs
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct OpenAIUsage {
+    pub prompt_tokens: u32,
+    pub completion_tokens: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub total_tokens: Option<u32>,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct OpenAIMessage {
@@ -78,6 +97,7 @@ pub struct OpenAIResponse {
     pub id: String,
     pub choices: Vec<OpenAIChoice>,
     pub model: String,
+    pub usage: OpenAIUsage,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
