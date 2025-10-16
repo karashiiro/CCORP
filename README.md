@@ -94,7 +94,7 @@ CCORP is designed to work seamlessly with Anthropic's Claude Code CLI:
 
    ```bash
    export ANTHROPIC_BASE_URL=http://localhost:3000
-   export ANTHROPIC_AUTH_TOKEN="your_openrouter_api_key"
+   export ANTHROPIC_API_KEY="your_openrouter_api_key"
    ```
 
 3. Run Claude Code as normal:
